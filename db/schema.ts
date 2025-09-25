@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, timestamp, integer, pgEnum, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar, timestamp, integer, pgEnum, uniqueIndex, json } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
 // 角色枚举：SYSTEM 系统管理员，ADMIN 普通管理员
@@ -47,4 +47,31 @@ export const adminSessionsRelations = relations(adminSessions, ({ one }) => ({
   }),
 }));
 
+export const cardSets = pgTable("card_set", {
+  id: text("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  author: text("author"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  tags: json("tags"),
+});
 
+export const cards = pgTable("card", {
+  id: text("id").primaryKey(),
+  setId: text("set_id").notNull().references(() => cardSets.id, { onDelete: "cascade" }),
+  order: integer("order"),
+  front: json("front"),
+  back: json("back"),
+});
+
+export const cardSetsRelations = relations(cardSets, ({ many }) => ({
+  cards: many(cards),
+}));
+
+export const cardsRelations = relations(cards, ({ one }) => ({
+  set: one(cardSets, {
+    fields: [cards.setId],
+    references: [cardSets.id],
+  }),
+}));

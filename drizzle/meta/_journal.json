@@ -8,6 +8,13 @@
       "when": 1758772218950,
       "tag": "0000_past_nomad",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758838553639,
+      "tag": "0001_gifted_barracuda",
+      "breakpoints": true
     }
   ]
 }

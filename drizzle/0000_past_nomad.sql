@@ -1,5 +1,11 @@
-CREATE TYPE "public"."admin_role" AS ENUM('SYSTEM', 'ADMIN');--> statement-breakpoint
-CREATE TABLE "admin_sessions" (
+DO $$
+BEGIN
+	CREATE TYPE "public"."admin_role" AS ENUM('SYSTEM', 'ADMIN');
+EXCEPTION
+	WHEN duplicate_object THEN NULL;
+END $$;
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "admin_sessions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" integer NOT NULL,
 	"token" varchar(255) NOT NULL,
@@ -7,7 +13,7 @@ CREATE TABLE "admin_sessions" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "admin_users" (
+CREATE TABLE IF NOT EXISTS "admin_users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(120) NOT NULL,
 	"email" varchar(255) NOT NULL,
@@ -17,6 +23,13 @@ CREATE TABLE "admin_users" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "admin_sessions" ADD CONSTRAINT "admin_sessions_user_id_admin_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."admin_users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE UNIQUE INDEX "admin_sessions_token_key" ON "admin_sessions" USING btree ("token");--> statement-breakpoint
-CREATE UNIQUE INDEX "admin_users_email_key" ON "admin_users" USING btree ("email");
+DO $$
+BEGIN
+	ALTER TABLE "admin_sessions" ADD CONSTRAINT "admin_sessions_user_id_admin_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."admin_users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+	WHEN duplicate_object THEN NULL;
+END $$;
+--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "admin_sessions_token_key" ON "admin_sessions" USING btree ("token");
+--> statement-breakpoint
+CREATE UNIQUE INDEX IF NOT EXISTS "admin_users_email_key" ON "admin_users" USING btree ("email");
