@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition, useState } from "react";
+import { useEffect, useTransition, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -40,6 +40,8 @@ export default function SignInPage() {
     });
   };
 
+  // 移除首次运行自动跳转注册逻辑，始终停留在登录页
+
   return (
     <Card>
       <CardHeader>
@@ -62,14 +64,7 @@ export default function SignInPage() {
           <Button type="submit" disabled={isPending} className="w-full">
             {isPending ? "登录中..." : "立即登录"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={() => router.push("/signup")}
-          >
-            注册管理员账号
-          </Button>
+          {/* 移除注册入口 */}
         </CardFooter>
       </form>
     </Card>
